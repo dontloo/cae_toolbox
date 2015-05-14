@@ -145,9 +145,9 @@ function [cae] = cae_grad(cae, x, para)
         end        
     end    
     
-    cae.dc = sum(cae.dc,3)/para.bsze;
-    cae.db = sum(cae.db,3)/para.bsze;
-    cae.dw = sum(cae.dw,5)/para.bsze;    
+    cae.dc = sum(cae.dc,3);
+    cae.db = sum(cae.db,3);
+    cae.dw = sum(cae.dw,5);    
 end
 
 function [cae] = cae_update(cae, opts)
