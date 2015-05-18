@@ -26,7 +26,7 @@ function [cae] = cae_ffbp(cae, x, para)
     x_noise = x.*(rand(size(x))>=cae.noise);
     cae = cae_up(cae, x_noise, para);
     cae = cae_pool(cae, para);
-%     cae = cae_resize_pool(cae, para);
+    cae = cae_resize_pool(cae, para);
     cae = cae_down(cae, para);
     cae = cae_grad(cae, x, para);
 end
@@ -47,19 +47,34 @@ end
 function cae = cae_pool(cae, para)
     % ps: pool size
     if cae.ps>=2
-        cae.h_pool = zeros(size(cae.h));
+        cae.h_pool = zeros(size(cae.h)./[cae.ps cae.ps 1 1]);
+        for i = 1:para.pgrds
+            for j = 1:para.pgrds
+                grid = cae.h((i-1)*cae.ps+1:i*cae.ps,(j-1)*cae.ps+1:j*cae.ps,:,:);
+                cae.h_pool(i,j,:,:) = max(max(grid));
+%                 mx = repmat(max(max(grid)),cae.ps,cae.ps);
+%                 cae.h_repl((i-1)*cae.ps+1:i*cae.ps,(j-1)*cae.ps+1:j*cae.ps,:,:) = mx;
+%                 mask = (grid==mx);
+%                 cae.h_mask((i-1)*cae.ps+1:i*cae.ps,(j-1)*cae.ps+1:j*cae.ps,:,:) = mask./repmat(sum(sum(mask)),cae.ps,cae.ps);
+            end
+        end        
+    end
+end
+
+function cae = cae_resize_pool(cae, para)
+    if cae.ps>=2
+        cae.h_repl = zeros(size(cae.h));        
         cae.h_mask = zeros(size(cae.h));
         for i = 1:para.pgrds
             for j = 1:para.pgrds
-                grid = cae.h((i-1)*cae.ps+1:i*cae.ps,(j-1)*cae.ps+1:j*cae.ps,:,:);           
-                mx = repmat(max(max(grid)),cae.ps,cae.ps);
-                mask = (grid==mx);
-                sparse_grid = zeros(size(grid));
-                sparse_grid(mask) = grid(mask);
-                cae.h_pool((i-1)*cae.ps+1:i*cae.ps,(j-1)*cae.ps+1:j*cae.ps,:,:) = sparse_grid;
-                cae.h_mask((i-1)*cae.ps+1:i*cae.ps,(j-1)*cae.ps+1:j*cae.ps,:,:) = mask;
+                tmp = repmat(cae.h_pool(i,j,:,:),cae.ps,cae.ps);
+                cae.h_repl((i-1)*cae.ps+1:i*cae.ps,(j-1)*cae.ps+1:j*cae.ps,:,:) = tmp;
+                mask = (cae.h((i-1)*cae.ps+1:i*cae.ps,(j-1)*cae.ps+1:j*cae.ps,:,:)==tmp);
+                cae.h_mask((i-1)*cae.ps+1:i*cae.ps,(j-1)*cae.ps+1:j*cae.ps,:,:) = mask./repmat(sum(sum(mask)),cae.ps,cae.ps);
             end
-        end        
+        end
+    else
+        cae.h_repl = cae.h; 
     end
 end
 
@@ -69,7 +84,7 @@ function [cae] = cae_down(cae, para)
     for pt = 1:para.bsze
         for ic = 1:cae.ic
             for oc = 1:cae.oc
-                cae.o(:,:,ic,pt) = cae.o(:,:,ic,pt) + conv2(cae.h_pool(:,:,oc,pt),cae.w_tilde(:,:,ic,oc),'full');
+                cae.o(:,:,ic,pt) = cae.o(:,:,ic,pt) + conv2(cae.h_repl(:,:,oc,pt),cae.w_tilde(:,:,ic,oc),'full');
             end
             cae.o(:,:,ic,pt) = sigm(cae.o(:,:,ic,pt)+cae.c(ic));
         end        
@@ -96,6 +111,21 @@ function [cae] = cae_grad(cae, x, para)
         end        
     end    
     if cae.ps>=2        
+        % dmaxpool(sigmoid(h'))/dsigmoid(h')
+        % non-max terms are zero, if duplicate max values, normalize equally. 
+        % resize
+        cae.dh_pool = zeros(size(cae.h_pool));
+        for i = 1:para.pgrds
+            for j = 1:para.pgrds      
+                cae.dh_pool(i,j,:,:) = sum(sum(cae.dh((i-1)*cae.ps+1:i*cae.ps,(j-1)*cae.ps+1:j*cae.ps,:,:)));
+            end
+        end
+        % max
+        for i = 1:para.pgrds
+            for j = 1:para.pgrds      
+                cae.dh((i-1)*cae.ps+1:i*cae.ps,(j-1)*cae.ps+1:j*cae.ps,:,:) = repmat(cae.dh_pool(i,j,:,:),cae.ps,cae.ps);
+            end
+        end
         cae.dh = cae.dh.*cae.h_mask;
     end
     % dsigmoid(h')/dh'
@@ -110,7 +140,7 @@ function [cae] = cae_grad(cae, x, para)
         for oc = 1:cae.oc
             for ic = 1:cae.ic                
                 % x~*dh+dy~*h, perfect                
-                cae.dw(:,:,ic,oc,pt) = conv2(x_tilde(:,:,ic,pt),cae.dh(:,:,oc,pt),'valid')+conv2(cae.dy_tilde(:,:,ic,pt),cae.h_pool(:,:,oc,pt),'valid');
+                cae.dw(:,:,ic,oc,pt) = conv2(x_tilde(:,:,ic,pt),cae.dh(:,:,oc,pt),'valid')+conv2(cae.dy_tilde(:,:,ic,pt),cae.h_repl(:,:,oc,pt),'valid');
             end
         end        
     end    
