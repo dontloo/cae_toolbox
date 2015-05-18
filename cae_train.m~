@@ -1,4 +1,4 @@
-function [cae] = cae_train(cae, x, opts)
+function [cae] = cae_train_sub(cae, x, opts)
     
     [x,para] = cae_check(cae,x,opts);
     cae.L = zeros(opts.numepochs*para.bnum,1);
