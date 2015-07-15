@@ -1,3 +1,5 @@
+% visualize the first layer kernels of CAE,
+% and reconstruction results aside the original input.
 function cae_vis(cae, x)
     figure,plot(cae.L);
     
