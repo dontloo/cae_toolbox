@@ -1,4 +1,5 @@
 % use cae to initialize cnn of the same structure
+% only the first layer by far, to be improved
 function [cnn] = cae_setup_cnn(cae, cnn, train_x, train_y)
     cnn = cnnsetup(cnn,train_x,train_y);
     for j = 1 : cae.oc
