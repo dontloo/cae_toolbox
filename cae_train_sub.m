@@ -1,5 +1,8 @@
-% subsampling is used after the max pooling operation
-function [cae] = cae_train(cae, x, opts)
+% similar to the cae_train method,
+% but subsampling is used after the max pooling operation.
+% cae_check_grad can be turned on to verify the gradients numerically.
+
+function [cae] = cae_train_sub(cae, x, opts)
     
     [x,para] = cae_check(cae,x,opts);
     cae.L = zeros(opts.numepochs*para.bnum,1);
