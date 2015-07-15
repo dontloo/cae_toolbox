@@ -1,3 +1,9 @@
+% train the cae using backpropagation and stochastic gradient descent.
+% the pooling operation will filter out all non-maximum values in the neighbourhood, 
+% which will result in a sparse matrix.
+% no subsampling is used according to the original paper Masci 2011.
+% cae_check_grad can be turned on to verify the gradients numerically.
+
 function [cae] = cae_train(cae, x, opts)
     
     [x,para] = cae_check(cae,x,opts);
