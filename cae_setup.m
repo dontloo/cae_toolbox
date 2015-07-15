@@ -1,4 +1,6 @@
+% set up a convolutional auto-encoder with random initialization
 % input channels | output channels | kernel size | pool size | noise
+% weights of encoder and decoder networks are tied
 function [ cae ] = cae_setup(ic,oc,ks,ps,noise)
     cae.ic = ic; % input channels
     cae.oc = oc; % output channels
