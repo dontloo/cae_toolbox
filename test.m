@@ -5,7 +5,7 @@
 % A sample of 24 first layer kernels trained on KITTI image set is provided in "exmaple_kernels.png".
 
 % DeepLearnToolbox need to be included in the Matlab path .
-% if necessary, the CNN module of DeepLearnToolbox need to be adjusted to work with multi-channel input.
+% if necessary, the CNN module of DeepLearnToolbox need to be adjusted accordingly to work with multi-channel input.
 
 load mnist_uint8;
 
