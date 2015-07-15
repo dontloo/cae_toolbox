@@ -4,6 +4,9 @@
 % and compare error rate with random initialization. 
 % A sample of 24 first layer kernels trained on KITTI image set is provided in "exmaple_kernels.png".
 
+% DeepLearnToolbox need to be included in the Matlab path .
+% if necessary, the CNN module of DeepLearnToolbox need to be adjusted to work with multi-channel input.
+
 load mnist_uint8;
 
 train_x = double(reshape(train_x',28,28,60000))/255;
