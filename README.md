@@ -2,4 +2,9 @@
 library for convolutional auto-encoders, based on http://people.idsia.ch/~ciresan/data/icann2011.pdf
 compatible with DeepLearnToolbox https://github.com/rasmusbergpalm/DeepLearnToolbox
 
-"test.m" is an example of how to set up and train a convolutional auto-encoder, visualize the first layer kernels and reconstruction results alongside the original input, use the training result to initialize a convolutional neural network with the same architecture, and compare error rate with random initialization. An example of 24 first layer kernels trained on the KITTI image set is provided in "exmaple_kernels.png".
+(test.m)[https://github.com/dontloo/cae_toolbox/blob/master/test.m] is an example of how to set up and train a convolutional auto-encoder, visualize the first layer kernels and reconstruction results alongside the original input, use the training result to initialize a convolutional neural network with the same architecture, and compare error rate with random initialization. 
+
+`cae_check_grad` method in (cae_train.m)[https://github.com/dontloo/cae_toolbox/blob/master/cae_train.m] can be turned on to verify the gradients numerically.
+
+An example of 24 first layer convolution weights trained on the KITTI image set
+![convolution](https://github.com/dontloo/cae_toolbox/blob/master/exmaple_kernels.png)
