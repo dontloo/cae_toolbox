@@ -7,4 +7,6 @@ compatible with DeepLearnToolbox https://github.com/rasmusbergpalm/DeepLearnTool
 `cae_check_grad` method in (cae_train.m)[https://github.com/dontloo/cae_toolbox/blob/master/cae_train.m] can be turned on to verify the gradients numerically.
 
 An example of 24 first layer convolution weights trained on the KITTI image set
+<img src="https://github.com/dontloo/cae_toolbox/blob/master/exmaple_kernels.png" alt="drawing" width="200"/>
+
 ![convolution](https://github.com/dontloo/cae_toolbox/blob/master/exmaple_kernels.png)
